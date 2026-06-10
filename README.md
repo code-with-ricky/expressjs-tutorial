@@ -191,3 +191,102 @@ DELETE http://localhost:3000/user
 - REST APIs commonly use `GET`, `POST`, `PUT`, and `DELETE` to perform CRUD (Create, Read, Update, Delete) operations.
 
 ---
+## Serving Static Files
+
+Static files are files that are sent directly to the client without any server-side processing. Common examples include:
+
+- Images (`.jpg`, `.png`, `.gif`, `.svg`)
+- CSS files (`.css`)
+- JavaScript files (`.js`)
+- Videos (`.mp4`, `.webm`)
+- Documents (`.pdf`)
+
+Express provides a built-in middleware called `express.static()` to serve static files.
+
+### Syntax
+
+```javascript
+express.static(root, [options]);
+```
+
+Where:
+
+- `root` is the directory from which static files will be served.
+- `options` is an optional configuration object.
+
+### Serving Files from a Directory
+
+Suppose you have the following project structure:
+
+```text
+myapp/
+├── app.js
+└── public/
+    ├── images/
+    │   └── kitten.jpg
+    ├── css/
+    │   └── style.css
+    └── js/
+        └── script.js
+```
+
+To serve files from the `public` directory:
+
+```javascript
+app.use(express.static('public'));
+```
+
+Now the files can be accessed directly through the browser:
+
+```text
+http://localhost:3000/images/kitten.jpg
+http://localhost:3000/css/style.css
+http://localhost:3000/js/script.js
+```
+
+> **Note:** Express looks for files relative to the static directory, so `public` does not appear in the URL.
+
+### Using Multiple Static Directories
+
+You can serve static files from multiple directories:
+
+```javascript
+app.use(express.static('files'));
+app.use(express.static('images'));
+```
+
+Express searches the directories in the order they are registered.
+
+### Creating a Virtual Path Prefix
+
+A virtual path prefix allows you to expose a directory under a custom URL path.
+
+```javascript
+app.use('/static', express.static('videos'));
+```
+
+Now files inside the `videos` directory can be accessed using:
+
+```text
+http://localhost:3000/static/myvideo.mp4
+```
+
+### Using an Absolute Path
+
+The path provided to `express.static()` is relative to the directory from which the Node.js process is started.
+
+To avoid path-related issues, use an absolute path:
+
+```javascript
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
+```
+
+### Notes
+
+- `express.static()` is built-in middleware provided by Express.
+- Static files are served directly without defining routes.
+- Multiple static directories can be registered using multiple `app.use()` calls.
+- Virtual path prefixes help organize URLs without changing folder names.
+- Using `path.join(__dirname, ...)` is recommended for better portability across environments.
+- For production applications, a reverse proxy such as Nginx is commonly used to improve static file performance and caching.
